@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - AURIDAL S.L.</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.webp">
+</head>
+<body>
+    <header>
+        <nav class="top-menu">
+            <div class="menu-icon" id="menuIcon">
+                <!-- SVG for the Menu Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="menuSvg">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
+            <a href="../index.html">
+                <div class="logo">AURIDAL S.L.</div> 
+            </a>
+            <div class="menu-container">
+                <ul class="menu">
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                            Nuestra empresa
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="black" d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="../nuestraEmpresa/queOfrecemos.html">¿Qué ofrecemos?</a>
+                            <a href="../nuestraEmpresa/quienesSomos.html">¿Quiénes somos?</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                            Producto
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="black" d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="../producto/colores.html">Colores</a>
+                            <a href="../producto/clasico.html">Clásico</a>
+                            <a href="../producto/natural.html">Natural</a>
+                            <a href="../producto/moderno.html">Moderno</a>
+                        </div>
+                    </li>
+                    <li><a href="../pie/contacto.html">Contacto</a></li>
+                    <li id="userIcon" class="dropdown">
+                        <a href="#" id="profileButton">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                                <path d="M12 14c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/>
+                            </svg>
+                        </a>
+                        <div  id="userDropdown" class="dropdown-content">
+                            <a href="../login.html">Inicia sesión</a>
+                        </div>
+                    </li>
+                </ul>
+                <div class="search-container">
+                    <input type="text" placeholder="Search..." id="searchInput" class="hidden">
+                    <button id="searchButton">
+                        <!-- Inline SVG for the search icon -->
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+            </div>
+        </nav>
+    </header>
+
+    <!-- Side Navigation Menu for Mobile (hidden by default) -->
+    <div id="sideMenu" class="side-menu">
+        <div class="side-menu-header">
+            <a href="../index.html">
+                <div class="logo">AURIDAL S.L.</div> 
+            </a>
+            <a href="#" class="closebtn" id="closeBtn">&times;</a>
+        </div>
+        <ul class="dropdown">
+            <a href="../login.html" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                    <path d="M12 14c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/>
+                </svg>
+                Inicia sesión
+            </a>
+        </ul>
+        <ul class="dropdown">
+            <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+              Nuestra empresa
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="white" d="M7 10l5 5 5-5z"/>
+                </svg>
+            </a>
+            <div class="dropdown-content">
+                <a href="../nuestraEmpresa/queOfrecemos.html">¿Qué ofrecemos?</a>
+                <a href="../nuestraEmpresa/quienesSomos.html">¿Quiénes somos?</a>
+            </div>
+        </ul>
+        <ul class="dropdown">
+            <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+              Producto
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="white" d="M7 10l5 5 5-5z"/>
+                </svg>
+            </a>
+            <div class="dropdown-content">
+                <a href="../producto/colores.html">Colores</a>
+                <a href="../producto/clasico.html">Clásico</a>
+                <a href="../producto/natural.html">Natural</a>
+                <a href="../producto/moderno.html">Moderno</a>
+            </div>
+        </ul>
+        <ul>
+            <a href="../pie/contacto.html">Contacto</a>
+        </ul>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-sidebar-header">
+            <h2>Tu Carrito</h2>
+            <button class="close-cart" onclick="toggleCartSidebar()">✖</button>
+        </div>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically loaded here -->
+        </div>
+        <div class="cart-sidebar-footer">
+            <button class="checkout-button">
+                <strong style="font-size: 18px;">Generar factura</strong>
+                <p><span id="total-amount">0.00€</span></p>
+            </button>
+        </div>
+    </div> 
+    
+    <main>
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-images">
+                <div class="hero-image" style="background-image: url('../images/hero-image.png');"></div>
+            </div>
+            <h1>Términos de servicio</h1>
+        </div>
+
+        <!-- Parallax Section -->
+        <div class="small-height">
+            Scroll Up and Down this page to see the parallax scrolling effect.
+        </div>
+
+        <div class="parallax"></div>
+
+        <div class="small-height">
+            <h1>HELLO</h1>
+            Scroll Up and Down this page to see the parallax scrolling effect.
+        </div>
+
+        <!-- Fix this section by applying background-image consistently -->
+        <div class="parallax"></div>
+
+        <!-- Pop-Up Notification -->
+        <div id="popup" class="popup">
+            <span id="popup-close" class="popup-close">&times;</span>
+            <div id="popup-emoji" class="popup-emoji"></div>
+            <span id="popup-message"></span>
+        </div>
+    </main>
+    
+    <script src="../js/main.js"></script>
+
+    <script>
+        // Function to handle image navigation
+        function handleClick(event, button, direction) {
+            event.preventDefault(); // Prevent default action (if any)
+            event.stopPropagation(); // Stop the event from bubbling up to the parent div
+
+            const productItem = button.parentElement; // Get the parent container (the product item)
+            const carousel = productItem.querySelector('.carousel'); // Find the carousel within the product item
+            const items = carousel.querySelectorAll('.item'); // Get all images
+            let currentIndex = 0;
+
+            // Find the current visible image
+            items.forEach((item, index) => {
+                if (window.getComputedStyle(item).display !== "none") {
+                    currentIndex = index;
+                }
+            });
+
+            // Determine the next index based on the button clicked
+            if (direction === 'next') {
+                currentIndex = (currentIndex + 1) % items.length; // Move to the next image, loop back if needed
+            } else if (direction === 'previous') {
+                currentIndex = (currentIndex - 1 + items.length) % items.length; // Move to the previous image, loop back if needed
+            }
+
+            // Hide all items
+            items.forEach(item => {
+                item.style.display = 'none';
+            });
+
+            // Show the new current item
+            items[currentIndex].style.display = 'block';
+        }
+
+        function redirectToProduct(productId, category) {
+            window.location.href = `product.html?id=${productId}&category=${category}`;
+        }
+
+
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('query'); // This will return the search query, or null if not present
+        }
+    
+        // Function to handle search bar toggle
+        function toggleSearchBar(event) {
+            event.preventDefault(); // Prevent default behavior on button click
+            const searchInput = document.getElementById('searchInput');
+            
+            if (!searchInput) return; // Exit if searchInput is not found
+    
+            if (searchInput.classList.contains('visible')) {
+                const searchText = searchInput.value.trim();
+                if (searchText) {
+                    // Perform the search if there's a query, redirecting to the search-results page
+                    window.location.href = `../search-results.html?query=${encodeURIComponent(searchText)}`;
+                } else {
+                    // Close the search bar if it's open and no search text is entered
+                    searchInput.classList.remove('visible'); // Hide the input field
+                    searchInput.value = ''; // Optionally clear the search bar input
+                }
+            } else {
+                // Show the search bar and focus the input
+                searchInput.classList.add('visible');
+                searchInput.focus(); // Focus the input for typing
+            }
+        }
+    
+        // Function to hide search bar when clicking outside
+        function hideSearchBarIfClickedOutside(event) {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+    
+            if (searchInput && searchButton) {
+                // If the search input is visible and the click is outside both the search input and the search button
+                if (searchInput.classList.contains('visible') && 
+                    !searchInput.contains(event.target) && 
+                    !searchButton.contains(event.target)) {
+                    searchInput.classList.remove('visible'); // Hide the search bar
+                    searchInput.value = ''; // Optionally clear the search bar input
+                }
+            }
+        }
+    
+        // Add event listener after checking if elements exist
+        const searchButton = document.getElementById('searchButton');
+        const searchInput = document.getElementById('searchInput');
+    
+        if (searchButton && searchInput) {
+            // Event listener to toggle search bar visibility on button click
+            searchButton.addEventListener('click', function(e) {
+                toggleSearchBar(e); // Pass the event to toggleSearchBar
+            });
+    
+            // Event listener to hide search bar when clicking outside
+            document.addEventListener('click', hideSearchBarIfClickedOutside);
+    
+            // Optional: Trigger search on 'Enter' key press in the search input field
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent default form behavior
+                    const searchText = e.target.value.trim();
+                    if (searchText) {
+                        window.location.href = `../search-results.html?query=${encodeURIComponent(searchText)}`;
+                    }
+                }
+            });
+        }
+    </script>
+
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>© 2024 AURIDAL S.L. | Todos los derechos reservados</p>
+            <ul class="footer-menu">
+                <li><a href="privacidad.html">Política de privacidad</a></li>
+                <li><a href="servicio.html">Términos de servicio</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+

@@ -1,0 +1,275 @@
+/* ======================================== */
+/* ========= NAVEGAR POR IMAGENES ========= */
+/* ======================================== */
+
+.main-image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#main-product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.thumbnail-image {
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  /* transition: transform 0.3s; */
+  border: 2px solid transparent;
+  transition: border 0.2s ease-in-out;
+}
+
+.thumbnail-image.active {
+  border: 2px solid grey;  /* Highlight color (you can change this) */
+}
+
+.thumbnail-image:hover {
+  transform: scale(1.1);
+}
+
+.nav-container {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.prev-button {
+  transition: opacity 0.3s, color 0.3s, border 0.3s; /* Smooth transition for visibility */
+  background-color: transparent;
+  border: white;
+  position: absolute;
+  left: 10px;
+  cursor: pointer;
+  border-radius: 0%;
+  font-size: 40px;
+  top: 50%;
+}
+
+.next-button {
+  transition: opacity 0.3s, color 0.3s, border 0.3s; /* Smooth transition for visibility */
+  border: white;
+  background-color: transparent;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  border-radius: 0%;
+  font-size: 40px;
+  top: 50%;
+}
+
+#fullscreen-close-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 50px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  padding: 5px 10px;
+  z-index: 2000; /* Make sure it's on top of everything */
+  display: none; /* Hidden by default */
+}
+
+#fullscreen-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.9); /* Darken on hover */
+}
+
+/* ======================================== */
+/* ========= CANTIDAD DE METROS =========== */
+/* ======================================== */
+
+/* Container for the entire quantity selector */
+.quantity-selector {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Label styling */
+.quantity-selector label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Container for the controls (buttons and input) */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px; /* Adjust the width as needed */
+}
+
+/* Input field styling */
+.quantity-controls input[type="number"] {
+  width: 60px; /* Adjust to make it wider or narrower */
+  text-align: center;
+  font-size: 16px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: textfield; /* Remove spin buttons on some browsers */
+}
+
+/* Styling for buttons */
+.quantity-btn {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover and active states for buttons */
+.quantity-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.quantity-btn:active {
+  background-color: #d0d0d0;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Remove arrows from number input for webkit-based browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-alert {
+  margin-bottom: 10px;
+  
+}
+
+.quantity-alert p{
+  font-size: 14px;
+  color: black;
+  margin-top: 6px;
+}
+
+.quantity-alert .icon {
+  margin-right: 8px;
+  font-size: 18px; /* Adjust size as needed */
+}
+
+
+/* Cuidado del producto */
+.product-care{
+  display: block; /* Use flexbox to align images and product info side by side */
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100;
+}
+
+.product-care p{
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: justify;
+}
+
+/* Productos similares */
+.similar-products{
+  display: block; /* Use flexbox to align images and product info side by side */
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100;
+}
+
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 0 30px; /* Add padding to the sides to create space for the arrows */
+}
+
+.carousel-inner-wrapper {
+  width:100%;
+  position: relative;
+  overflow: hidden; /* Apply overflow to hide the extra items */
+  display: flex;
+  align-items: center;
+}
+
+.carousel-container {
+  display: flex;
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+
+.product-item {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.carousel-prev, .carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background-color: transparent;
+  color: black;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10; /* Ensure it’s on top of other elements */
+  font-size: 48px;
+  display: none; /* Hidden by default */
+}
+
+.carousel-prev {
+  left: 0; /* Align to the left of the container */
+}
+
+.carousel-next {
+  right: 0; /* Align to the right of the container */
+}
+
+.carousel-prev:hover, .carousel-next:hover {
+  color: #333; /* Darken on hover for better visibility */
+}
+
+@media (max-width: 768px) {
+  .product-item {
+    padding: 5px;
+  }
+}

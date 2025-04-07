@@ -1,267 +1,323 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
+const { body, validationResult } = require('express-validator');
 const app = express();
+const path = require('path');
 
 // Middleware to parse JSON requests
 app.use(express.json());
+const url = path.join(__dirname, '../');
+app.use(express.static(url));  // Serve static files (HTML, CSS, JS)
 
-// Configure session management (for development, secure should be false)
+// Configuración de la sesión
 app.use(session({
-  secret: 'your-secret-key', // Ideally, use an environment variable here
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false }
-}));
+    secret: process.env.SESSION_SECRET || 'clave-secreta-de-respaldo', // Usar variable de entorno
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production' } // Cookies seguras en producción
+  }));
+  
 
-// Create a MySQL connection pool
+// Crear un pool de conexiones MySQL usando variables de entorno
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'your_mysql_username',
-  password: 'your_mysql_password',
-  database: 'your_database',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'tu_usuario_mysql',
+    password: process.env.DB_PASSWORD || 'tu_contraseña_mysql',
+    database: process.env.DB_NAME || 'tu_base_de_datos',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
+const poolPromise = pool.promise();      
 
-// Configure NodeMailer transporter
+// Configurar NodeMailer usando variables de entorno
 const transporter = nodemailer.createTransport({
-  host: 'smtp.example.com', // Replace with your SMTP host
-  port: 587, // Use 465 for secure connection if needed
-  secure: false, // Set true if using port 465
-  auth: {
-    user: 'your_email@example.com',
-    pass: 'your_email_password'
-  }
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: Number(process.env.EMAIL_PORT) || 587,
+    secure: Number(process.env.EMAIL_PORT) === 465, // true para el puerto 465
+    auth: {
+      user: process.env.EMAIL_USER || 'mariatapiacosta@gmail.com',
+      pass: process.env.EMAIL_PASS || 'mary0208'
+    }
 });
-
-// Helper function to send emails
+  
+// Función auxiliar para enviar correos con manejo de errores
 async function sendEmail(to, subject, text) {
-  return transporter.sendMail({
-    from: '"Your E-commerce App" <your_email@example.com>',
+try {
+    const info = await transporter.sendMail({
+    from: process.env.EMAIL_FROM || '"AURIDAL S.L." <mariatapiacosta@gmail.com>',
     to,
     subject,
     text
-  });
+    });
+    console.log('Correo enviado: %s', info.messageId);
+    return info;
+} catch (error) {
+    console.error('Error al enviar el correo:', error);
+    throw error;
+}
 }
 
+// Middleware para verificar que el usuario esté autenticado
+function isAuthenticated(req, res, next) {
+    if (req.session && req.session.user) {
+      return next();
+    }
+    res.status(401).json({ error: 'No autorizado' });
+  }
+  
+  // Middleware para verificar que el usuario sea administrador
+  function isAdmin(req, res, next) {
+    if (req.session && req.session.user && req.session.user.isAdmin) {
+      return next();
+    }
+    res.status(401).json({ error: 'No autorizado: se requiere acceso de administrador' });
+  }
+
+
 // -------------------------
-// ADMIN: Create User Profile
+// ADMIN: Crear perfil de usuario
 // -------------------------
+
 // This endpoint lets an administrator create a new user profile.
 // It generates a username (name.surname.randomNum) and a temporary password.
 // The temporary password is hashed and saved in the database with a flag to force a password change.
 // Admin endpoint to create external users
-app.post('/admin/create-user', isAuthenticated, isAdmin, async (req, res) => {
-    const { name, surname, email, phone, nif } = req.body;
-    if (!name || !surname || !email) {
-      return res.status(400).json({ error: 'Missing required fields' });
+
+
+app.post('/admin/create-user',
+  isAuthenticated,
+  isAdmin,
+  [
+    body('name').isString().trim().notEmpty().withMessage('El nombre es obligatorio'),
+    body('surname').isString().trim().notEmpty().withMessage('El apellido es obligatorio'),
+    body('email').isEmail().normalizeEmail().withMessage('Se requiere un correo electrónico válido'),
+    body('phone').optional().isString().trim(),
+    body('nif').optional().isString().trim()
+  ],
+  async (req, res) => {
+    // Validar errores de entrada
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    // Generate a unique username and temporary password
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const username = `${name.toLowerCase()}.${surname.toLowerCase()}.${randomNum}`;
-    const tempPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
-  
-    pool.query(
-      'INSERT INTO users (name, surname, email, phone, nif, username, password, forcePasswordChange, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, surname, email, phone, nif, username, hashedPassword, 1, false], // External users are not admin
-      async (err, results) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: 'Database error' });
-        }
-        try {
-          await sendEmail(email, 'Your Account Credentials', 
-            `Your account has been created.\nUsername: ${username}\nTemporary Password: ${tempPassword}\nPlease log in and change your password immediately.`
-          );
-          res.json({ message: 'User created and email sent', username });
-        } catch (emailError) {
-          console.error(emailError);
-          res.status(500).json({ error: 'User created but failed to send email' });
-        }
+    try {
+      const { name, surname, email, phone, nif } = req.body;
+      // Generar un nombre de usuario único y una contraseña temporal
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      const username = `${name.toLowerCase()}.${surname.toLowerCase()}.${randomNum}`;
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+      await poolPromise.query(
+        'INSERT INTO users (name, surname, email, phone, nif, username, password, forcePasswordChange, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, surname, email, phone, nif, username, hashedPassword, 1, false]
+      );
+
+      // Enviar correo con las credenciales
+      await sendEmail(email, 'Credenciales de tu cuenta', 
+        `Tu cuenta ha sido creada.\nNombre de usuario: ${username}\nContraseña temporal: ${tempPassword}\nPor favor, inicia sesión y cambia tu contraseña inmediatamente.`
+      );
+      res.json({ message: 'Usuario creado y correo enviado', username });
+    } catch (err) {
+      console.error('Error en /admin/create-user:', err);
+      res.status(500).json({ error: 'Ocurrió un error al crear el usuario' });
+    }
+  }
+);
+
+// -------------------------
+// INICIO DE SESIÓN
+// -------------------------
+app.post('/login',
+  [
+    body('username').isString().trim().notEmpty().withMessage('El nombre de usuario es obligatorio'),
+    body('password').isString().trim().notEmpty().withMessage('La contraseña es obligatoria')
+  ],
+  async (req, res) => {
+    // Validar entrada
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { username, password } = req.body;
+      const [rows] = await poolPromise.query('SELECT * FROM users WHERE username = ?', [username]);
+      if (rows.length === 0) {
+        return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos' });
       }
-    );
-  });
-  
-
-// -------------------------
-// USER LOGIN
-// -------------------------
-// This endpoint logs a user in by verifying their username and password.
-// If the user is flagged to change the password on first login, that info is returned.
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if(!username || !password) {
-    return res.status(400).json({ error: 'Missing username or password' });
+      const user = rows[0];
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos' });
+      }
+      // Guardar información del usuario en la sesión
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+        forcePasswordChange: user.forcePasswordChange,
+        isAdmin: user.isAdmin
+      };
+      if (user.forcePasswordChange) {
+        return res.json({ message: 'Se requiere cambio de contraseña', forcePasswordChange: true });
+      }
+      res.json({ message: 'Inicio de sesión exitoso' });
+    } catch (err) {
+      console.error('Error en /login:', err);
+      res.status(500).json({ error: 'Ocurrió un error durante el inicio de sesión' });
+    }
   }
-  pool.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    if (results.length === 0) {
-      return res.status(401).json({ error: 'Invalid username or password' });
-    }
-    const user = results[0];
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid username or password' });
-    }
-    // Save user info in session
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      forcePasswordChange: user.forcePasswordChange,
-      isAdmin: user.isAdmin  // Add this line
-    };
-    // If password change is required, notify the client
-    if (user.forcePasswordChange) {
-      return res.json({ message: 'Password change required', forcePasswordChange: true });
-    }
-    res.json({ message: 'Logged in successfully' });
-  });
-});
+);
 
-// Middleware to ensure the user is authenticated
-function isAuthenticated(req, res, next) {
-  if (req.session && req.session.user) {
-    return next();
+// -------------------------
+// CAMBIAR CONTRASEÑA
+// -------------------------
+app.post('/change-password',
+  isAuthenticated,
+  [
+    body('newPassword').isString().trim().notEmpty().withMessage('Se requiere una nueva contraseña')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { newPassword } = req.body;
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await poolPromise.query('UPDATE users SET password = ?, forcePasswordChange = 0 WHERE id = ?', [hashedPassword, req.session.user.id]);
+      res.json({ message: 'Contraseña actualizada con éxito' });
+    } catch (err) {
+      console.error('Error en /change-password:', err);
+      res.status(500).json({ error: 'Ocurrió un error al actualizar la contraseña' });
+    }
   }
-  res.status(401).json({ error: 'Unauthorized' });
-}
-
-// Middleware to ensure the user is an admin
-function isAdmin(req, res, next) {
-    if (req.session && req.session.user && req.session.user.isAdmin) {
-      return next();
-    }
-    return res.status(401).json({ error: 'Unauthorized: Admin access required' });
-  }
+);
 
 // -------------------------
-// CHANGE PASSWORD
+// CERRAR SESIÓN
 // -------------------------
-// This endpoint allows an authenticated user to change their password.
-// It also clears the forcePasswordChange flag after a successful update.
-app.post('/change-password', isAuthenticated, async (req, res) => {
-  const { newPassword } = req.body;
-  if (!newPassword) {
-    return res.status(400).json({ error: 'New password is required' });
-  }
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  pool.query('UPDATE users SET password = ?, forcePasswordChange = 0 WHERE id = ?', [hashedPassword, req.session.user.id], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    res.json({ message: 'Password updated successfully' });
-  });
-});
-
-// -------------------------
-// LOGOUT
-// -------------------------
-// This endpoint logs out the user by destroying their session.
 app.get('/logout', isAuthenticated, (req, res) => {
   req.session.destroy(err => {
     if (err) {
-      return res.status(500).json({ error: 'Could not log out' });
+      console.error('Error al cerrar sesión:', err);
+      return res.status(500).json({ error: 'No se pudo cerrar sesión' });
     }
-    res.json({ message: 'Logged out successfully' });
+    res.json({ message: 'Sesión cerrada con éxito' });
   });
 });
 
 // -------------------------
-// PROFILE MANAGEMENT
+// GESTIÓN DE PERFIL
 // -------------------------
-// Get the profile details for the authenticated user.
-app.get('/profile', isAuthenticated, (req, res) => {
-  pool.query('SELECT id, name, surname, email, phone, nif, username FROM users WHERE id = ?', [req.session.user.id], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Database error' });
+app.get('/profile', isAuthenticated, async (req, res) => {
+  try {
+    const [rows] = await poolPromise.query('SELECT id, name, surname, email, phone, nif, username FROM users WHERE id = ?', [req.session.user.id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
     }
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.json(results[0]);
-  });
-});
-
-// Update profile information (e.g., name, surname, email, phone, nif)
-app.put('/profile', isAuthenticated, (req, res) => {
-  const { name, surname, email, phone, nif } = req.body;
-  pool.query(
-    'UPDATE users SET name = ?, surname = ?, email = ?, phone = ?, nif = ? WHERE id = ?',
-    [name, surname, email, phone, nif, req.session.user.id],
-    (err, results) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Database error' });
-      }
-      res.json({ message: 'Profile updated successfully' });
-    }
-  );
-});
-
-
-// -------------------------
-// CART MANAGEMENT
-// -------------------------
-// Dummy endpoints assuming a "carts" table related to users
-// Add an item to the cart
-app.post('/cart/add', isAuthenticated, (req, res) => {
-  const { itemId, quantity } = req.body;
-  if (!itemId || !quantity) {
-    return res.status(400).json({ error: 'Missing itemId or quantity' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Error en GET /profile:', err);
+    res.status(500).json({ error: 'Ocurrió un error al obtener el perfil' });
   }
-  pool.query('INSERT INTO carts (user_id, item_id, quantity) VALUES (?, ?, ?)', [req.session.user.id, itemId, quantity], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    res.json({ message: 'Item added to cart' });
-  });
 });
 
-// Remove an item from the cart
-app.post('/cart/delete', isAuthenticated, (req, res) => {
-  const { itemId } = req.body;
-  if (!itemId) {
-    return res.status(400).json({ error: 'Missing itemId' });
+app.put('/profile',
+  isAuthenticated,
+  [
+    body('name').isString().trim().notEmpty().withMessage('El nombre es obligatorio'),
+    body('surname').isString().trim().notEmpty().withMessage('El apellido es obligatorio'),
+    body('email').isEmail().normalizeEmail().withMessage('Se requiere un correo electrónico válido'),
+    body('phone').optional().isString().trim(),
+    body('nif').optional().isString().trim()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { name, surname, email, phone, nif } = req.body;
+      await poolPromise.query(
+        'UPDATE users SET name = ?, surname = ?, email = ?, phone = ?, nif = ? WHERE id = ?',
+        [name, surname, email, phone, nif, req.session.user.id]
+      );
+      res.json({ message: 'Perfil actualizado con éxito' });
+    } catch (err) {
+      console.error('Error en PUT /profile:', err);
+      res.status(500).json({ error: 'Ocurrió un error al actualizar el perfil' });
+    }
   }
-  pool.query('DELETE FROM carts WHERE user_id = ? AND item_id = ?', [req.session.user.id, itemId], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Database error' });
+);
+
+// -------------------------
+// GESTIÓN DEL CARRITO
+// -------------------------
+app.post('/cart/add',
+  isAuthenticated,
+  [
+    body('itemId').notEmpty().withMessage('Se requiere el ID del artículo'),
+    body('quantity').isInt({ gt: 0 }).withMessage('La cantidad debe ser un número entero positivo')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    res.json({ message: 'Item removed from cart' });
-  });
+    try {
+      const { itemId, quantity } = req.body;
+      await poolPromise.query('INSERT INTO carts (user_id, item_id, quantity) VALUES (?, ?, ?)', [req.session.user.id, itemId, quantity]);
+      res.json({ message: 'Artículo agregado al carrito' });
+    } catch (err) {
+      console.error('Error en POST /cart/add:', err);
+      res.status(500).json({ error: 'Ocurrió un error al agregar el artículo al carrito' });
+    }
+  }
+);
+
+app.post('/cart/delete',
+  isAuthenticated,
+  [
+    body('itemId').notEmpty().withMessage('Se requiere el ID del artículo')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { itemId } = req.body;
+      await poolPromise.query('DELETE FROM carts WHERE user_id = ? AND item_id = ?', [req.session.user.id, itemId]);
+      res.json({ message: 'Artículo eliminado del carrito' });
+    } catch (err) {
+      console.error('Error en POST /cart/delete:', err);
+      res.status(500).json({ error: 'Ocurrió un error al eliminar el artículo del carrito' });
+    }
+  }
+);
+
+// -------------------------
+// GESTIÓN DE PEDIDOS
+// -------------------------
+app.get('/orders', isAuthenticated, async (req, res) => {
+  try {
+    const [rows] = await poolPromise.query('SELECT * FROM orders WHERE user_id = ?', [req.session.user.id]);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error en GET /orders:', err);
+    res.status(500).json({ error: 'Ocurrió un error al obtener los pedidos' });
+  }
 });
 
 // -------------------------
-// ORDER MANAGEMENT
-// -------------------------
-// Retrieve orders for the authenticated user.
-// Assumes an "orders" table related to the user.
-app.get('/orders', isAuthenticated, (req, res) => {
-  pool.query('SELECT * FROM orders WHERE user_id = ?', [req.session.user.id], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    res.json(results);
-  });
-});
-
-// -------------------------
-// START SERVER
+// INICIAR SERVIDOR
 // -------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

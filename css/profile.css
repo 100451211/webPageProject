@@ -1,0 +1,109 @@
+/* profile.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+}
+
+
+.main-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+/* Side Menu */
+.side-menu-profile {
+    width: 200px;
+    margin-right: 20px;
+}
+
+.side-menu-profile ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.side-menu-profile li {
+    margin: 10px 0;
+}
+
+.side-menu-profile a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Profile Content */
+.profile-content {
+    flex: 1;
+}
+
+.profile-section {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.profile-image img {
+    width: 100px;
+    height: 100px;
+}
+
+.profile-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.profile-details {
+    flex: 1;
+    width: 100%;
+}
+
+.profile-details label,
+.settings-section label,
+.password-section label {
+    display: block;
+    margin-top: 10px;
+}
+
+.profile-details input,
+.settings-section input,
+.password-section input,
+.settings-section select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.settings-section, .password-section {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#profile-pic-btn{
+    background-color: transparent;
+}
