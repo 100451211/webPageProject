@@ -1,0 +1,48 @@
+[
+    {
+        
+        "id": "3006",
+        "name": "3006",
+        "price": {
+            "madrid": "",
+            "other": ""
+        },
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 40,
+                "largo": 50,
+                "rebajo": 10
+            },
+            "availability": 3
+        },
+        "images": [
+            "../images/image1.jpg",
+            "../images/image3.jpg"
+        ]
+    },
+    {
+        
+        "id": "3007",
+        "name": "3007",
+        "price": {
+            "madrid": "",
+            "other": ""
+        },
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 40,
+                "largo": 50,
+                "rebajo": 10
+            },
+            "availability": 3
+        },
+        "images": [
+            "../images/image1.jpg",
+            "../images/image3.jpg"
+        ]
+    }
+]

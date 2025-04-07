@@ -1,0 +1,49 @@
+[
+    {
+        
+        "id": "2006",
+        "name": "2006",
+        "price": {
+            "madrid": "",
+            "other": ""
+        },
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 40,
+                "largo": 50,
+                "rebajo": 10
+            },
+            "availability": 3
+        },
+        "images": [
+            "../images/image1.jpg",
+            "../images/image3.jpg"
+        ]
+    },
+    {
+        
+        "id": "2007",
+        "name": "2007",
+        "category": "colores",
+        "price": {
+            "madrid": "",
+            "other": ""
+        },
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 40,
+                "largo": 50,
+                "rebajo": 10
+            },
+            "availability": 3
+        },
+        "images": [
+            "../images/image1.jpg",
+            "../images/image3.jpg"
+        ]
+    }
+]

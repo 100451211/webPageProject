@@ -1,0 +1,297 @@
+[
+    {
+        
+        "id": "318-350",
+        "name": "318-350",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-350.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-351",
+        "name": "318-351",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-351.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-352",
+        "name": "318-352",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-352.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-353",
+        "name": "318-353",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-353.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-354",
+        "name": "318-354",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-354.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-355",
+        "name": "318-355",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-355.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-358",
+        "name": "318-358",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-358.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-359",
+        "name": "318-359",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-359.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "318-360",
+        "name": "318-360",
+        "supplier_prices":{
+            "madrid": 6.17,
+            "other": 5.97
+        },
+        "max_meters": 600,
+        "min_meters": 6,
+        "jump": 6,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/318-360.jpg",
+            "../images/salvadori/moderno/medidas-318.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "6006-40",
+        "name": "6006-40",
+        "supplier_prices":{
+            "madrid": 12.47,
+            "other": 12.37
+        },
+        "max_meters": 600,
+        "min_meters": 12,
+        "jump": 12,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/6006-40.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+        
+        "id": "6006-41",
+        "name": "6006-41",
+        "supplier_prices":{
+            "madrid": 12.47,
+            "other": 12.37
+        },
+        "max_meters": 600,
+        "min_meters": 12,
+        "jump": 12,
+        "description": "Este es un marco de alta calidad con acabado moderno y elegante.",
+        "details": {
+            "material": "Madera moderno",
+            "dimensions": {
+                "ancho": 18,
+                "largo": 35,
+                "rebajo": 20
+            },
+            "availability": 600
+        },
+        "images": [
+            "../images/salvadori/moderno/6006-41.jpg"
+        ],
+        "cuidado": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    }
+]
