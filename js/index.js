@@ -5,195 +5,187 @@ const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
 const { body, validationResult } = require('express-validator');
-const app = express();
 const path = require('path');
+const app = express();
 
-// Middleware to parse JSON requests
+// Middleware para parsear solicitudes JSON
 app.use(express.json());
+
+// Serve static files (HTML, CSS, JS)
 const url = path.join(__dirname, '../');
-app.use(express.static(url));  // Serve static files (HTML, CSS, JS)
+app.use(express.static(url));  
 
 // Configuración de la sesión
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'clave-secreta-de-respaldo', // Usar variable de entorno
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === 'production' } // Cookies seguras en producción
-  }));
-  
+  secret: process.env.SESSION_SECRET || 'clave-secreta-de-respaldo',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
 
-// Crear un pool de conexiones MySQL usando variables de entorno
+// Crear pool de conexión MySQL
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'tu_usuario_mysql',
-    password: process.env.DB_PASSWORD || 'tu_contraseña_mysql',
-    database: process.env.DB_NAME || 'tu_base_de_datos',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'tu_usuario',
+  password: process.env.DB_PASSWORD || 'tu_contraseña',
+  database: process.env.DB_NAME || 'nombre_de_la_base_de_datos',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
-const poolPromise = pool.promise();      
+const poolPromise = pool.promise();
 
-// Configurar NodeMailer usando variables de entorno
+// Configuración de NodeMailer (por ejemplo, para Gmail)
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: Number(process.env.EMAIL_PORT) || 587,
-    secure: Number(process.env.EMAIL_PORT) === 465, // true para el puerto 465
-    auth: {
-      user: process.env.EMAIL_USER || 'mariatapiacosta@gmail.com',
-      pass: process.env.EMAIL_PASS || 'mary0208'
-    }
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: Number(process.env.EMAIL_PORT) || 587,
+  secure: Number(process.env.EMAIL_PORT) === 465, // true para puerto 465
+  auth: {
+    user: process.env.EMAIL_USER || 'tu_email@example.com',
+    pass: process.env.EMAIL_PASS || 'tu_contraseña'
+  }
 });
-  
-// Función auxiliar para enviar correos con manejo de errores
+
+// Función auxiliar para enviar correo
 async function sendEmail(to, subject, text) {
-try {
+  try {
     const info = await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"AURIDAL S.L." <mariatapiacosta@gmail.com>',
-    to,
-    subject,
-    text
+      from: process.env.EMAIL_FROM || '"Tu App E-commerce" <tu_email@example.com>',
+      to,
+      subject,
+      text
     });
-    console.log('Correo enviado: %s', info.messageId);
+    console.log('Correo enviado:', info.messageId);
     return info;
-} catch (error) {
-    console.error('Error al enviar el correo:', error);
+  } catch (error) {
+    console.error('Error al enviar correo:', error);
     throw error;
-}
+  }
 }
 
 // Middleware para verificar que el usuario esté autenticado
 function isAuthenticated(req, res, next) {
-    if (req.session && req.session.user) {
-      return next();
-    }
-    res.status(401).json({ error: 'No autorizado' });
+  if (req.session && req.session.user) {
+    return next();
   }
-  
-  // Middleware para verificar que el usuario sea administrador
-  function isAdmin(req, res, next) {
-    if (req.session && req.session.user && req.session.user.isAdmin) {
-      return next();
-    }
-    res.status(401).json({ error: 'No autorizado: se requiere acceso de administrador' });
-  }
+  return res.status(401).json({ error: 'No autorizado' });
+}
 
+// Middleware para verificar que el usuario sea administrador
+function isAdmin(req, res, next) {
+  if (req.session && req.session.user && req.session.user.isAdmin) {
+    return next();
+  }
+  return res.status(401).json({ error: 'Acceso restringido: se requiere permisos de administrador' });
+}
 
 // -------------------------
-// ADMIN: Crear perfil de usuario
+// LOGIN (endpoint con validación y sanitización)
 // -------------------------
+app.post('/login',
+  [
+    body('username').trim().notEmpty().withMessage('El nombre de usuario es obligatorio'),
+    body('password').trim().notEmpty().withMessage('La contraseña es obligatoria')
+  ],
+  async (req, res) => {
+    // Verificar errores de validación
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.array()[0].msg });
+    }
+    try {
+      const { username, password } = req.body;
+      
+      // Consulta parametrizada para evitar inyección SQL
+      const [rows] = await poolPromise.query('SELECT * FROM users WHERE username = ?', [username]);
+      if (rows.length === 0) {
+        return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos.' });
+      }
+      const user = rows[0];
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos.' });
+      }
+      
+      // Guardar datos relevantes del usuario en la sesión
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+        isAdmin: user.isAdmin,
+        forcePasswordChange: user.forcePasswordChange
+      };
+      
+      // Solo se retorna el mensaje de éxito sin exponer detalles internos
+      return res.json({ ok: "Login successful" });
+    } catch (error) {
+      console.error("Error durante login:", error);
+      return res.status(500).json({ error: "Error interno del servidor." });
+    }
+  }
+);
 
-// This endpoint lets an administrator create a new user profile.
-// It generates a username (name.surname.randomNum) and a temporary password.
-// The temporary password is hashed and saved in the database with a flag to force a password change.
-// Admin endpoint to create external users
-
-
+// -------------------------
+// ADMIN: Crear usuario (con validación de entrada)
+// -------------------------
 app.post('/admin/create-user',
   isAuthenticated,
   isAdmin,
   [
-    body('name').isString().trim().notEmpty().withMessage('El nombre es obligatorio'),
-    body('surname').isString().trim().notEmpty().withMessage('El apellido es obligatorio'),
-    body('email').isEmail().normalizeEmail().withMessage('Se requiere un correo electrónico válido'),
-    body('phone').optional().isString().trim(),
-    body('nif').optional().isString().trim()
+    body('name').trim().notEmpty().withMessage('El nombre es obligatorio'),
+    body('surname').trim().notEmpty().withMessage('El apellido es obligatorio'),
+    body('email').trim().isEmail().withMessage('Se requiere un correo válido'),
+    body('phone').optional().trim(),
+    body('nif').optional().trim()
   ],
   async (req, res) => {
-    // Validar errores de entrada
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ error: errors.array()[0].msg });
     }
     try {
       const { name, surname, email, phone, nif } = req.body;
-      // Generar un nombre de usuario único y una contraseña temporal
       const randomNum = Math.floor(1000 + Math.random() * 9000);
       const username = `${name.toLowerCase()}.${surname.toLowerCase()}.${randomNum}`;
       const tempPassword = Math.random().toString(36).slice(-8);
       const hashedPassword = await bcrypt.hash(tempPassword, 10);
-
+      
       await poolPromise.query(
         'INSERT INTO users (name, surname, email, phone, nif, username, password, forcePasswordChange, isAdmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [name, surname, email, phone, nif, username, hashedPassword, 1, false]
       );
-
-      // Enviar correo con las credenciales
-      await sendEmail(email, 'Credenciales de tu cuenta', 
-        `Tu cuenta ha sido creada.\nNombre de usuario: ${username}\nContraseña temporal: ${tempPassword}\nPor favor, inicia sesión y cambia tu contraseña inmediatamente.`
+      
+      await sendEmail(email, 'Credenciales de tu cuenta',
+        `Tu cuenta ha sido creada.\nUsuario: ${username}\nContraseña temporal: ${tempPassword}\nPor favor, inicia sesión y cambia tu contraseña inmediatamente.`
       );
-      res.json({ message: 'Usuario creado y correo enviado', username });
-    } catch (err) {
-      console.error('Error en /admin/create-user:', err);
-      res.status(500).json({ error: 'Ocurrió un error al crear el usuario' });
+      res.json({ ok: 'User created and email sent', username });
+    } catch (error) {
+      console.error("Error en /admin/create-user:", error);
+      res.status(500).json({ error: "Error al crear el usuario." });
     }
   }
 );
 
 // -------------------------
-// INICIO DE SESIÓN
-// -------------------------
-app.post('/login',
-  [
-    body('username').isString().trim().notEmpty().withMessage('El nombre de usuario es obligatorio'),
-    body('password').isString().trim().notEmpty().withMessage('La contraseña es obligatoria')
-  ],
-  async (req, res) => {
-    // Validar entrada
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const { username, password } = req.body;
-      const [rows] = await poolPromise.query('SELECT * FROM users WHERE username = ?', [username]);
-      if (rows.length === 0) {
-        return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos' });
-      }
-      const user = rows[0];
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-        return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos' });
-      }
-      // Guardar información del usuario en la sesión
-      req.session.user = {
-        id: user.id,
-        username: user.username,
-        forcePasswordChange: user.forcePasswordChange,
-        isAdmin: user.isAdmin
-      };
-      if (user.forcePasswordChange) {
-        return res.json({ message: 'Se requiere cambio de contraseña', forcePasswordChange: true });
-      }
-      res.json({ message: 'Inicio de sesión exitoso' });
-    } catch (err) {
-      console.error('Error en /login:', err);
-      res.status(500).json({ error: 'Ocurrió un error durante el inicio de sesión' });
-    }
-  }
-);
-
-// -------------------------
-// CAMBIAR CONTRASEÑA
+// CAMBIO DE CONTRASEÑA
 // -------------------------
 app.post('/change-password',
   isAuthenticated,
   [
-    body('newPassword').isString().trim().notEmpty().withMessage('Se requiere una nueva contraseña')
+    body('newPassword').trim().notEmpty().withMessage('Se requiere una nueva contraseña')
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ error: errors.array()[0].msg });
     }
     try {
       const { newPassword } = req.body;
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await poolPromise.query('UPDATE users SET password = ?, forcePasswordChange = 0 WHERE id = ?', [hashedPassword, req.session.user.id]);
-      res.json({ message: 'Contraseña actualizada con éxito' });
-    } catch (err) {
-      console.error('Error en /change-password:', err);
-      res.status(500).json({ error: 'Ocurrió un error al actualizar la contraseña' });
+      await poolPromise.query('UPDATE users SET password = ?, forcePassword = 0 WHERE id = ?', [hashedPassword, req.session.user.id]);
+      res.json({ ok: "Password updated successfully" });
+    } catch (error) {
+      console.error("Error en /change-password:", error);
+      res.status(500).json({ error: "Error al actualizar la contraseña." });
     }
   }
 );
@@ -204,119 +196,85 @@ app.post('/change-password',
 app.get('/logout', isAuthenticated, (req, res) => {
   req.session.destroy(err => {
     if (err) {
-      console.error('Error al cerrar sesión:', err);
-      return res.status(500).json({ error: 'No se pudo cerrar sesión' });
+      console.error("Error al cerrar sesión:", err);
+      return res.status(500).json({ error: "No se pudo cerrar la sesión" });
     }
-    res.json({ message: 'Sesión cerrada con éxito' });
+    res.json({ ok: "Logged out successfully" });
   });
 });
 
 // -------------------------
-// GESTIÓN DE PERFIL
+// OBTENER PERFIL DE USUARIO
 // -------------------------
 app.get('/profile', isAuthenticated, async (req, res) => {
   try {
-    const [rows] = await poolPromise.query('SELECT id, name, surname, email, phone, nif, username FROM users WHERE id = ?', [req.session.user.id]);
+    const [rows] = await poolPromise.query(
+      'SELECT id, name, surname, email, phone, nif, username, profilePicture, street, street_num, postal_code, city, country, cif FROM users WHERE id = ?',
+      [req.session.user.id]
+    );
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      return res.status(404).json({ error: "Usuario no encontrado." });
     }
     res.json(rows[0]);
-  } catch (err) {
-    console.error('Error en GET /profile:', err);
-    res.status(500).json({ error: 'Ocurrió un error al obtener el perfil' });
+  } catch (error) {
+    console.error("Error en /profile:", error);
+    res.status(500).json({ error: "Error al obtener los datos del usuario." });
   }
 });
 
-app.put('/profile',
-  isAuthenticated,
-  [
-    body('name').isString().trim().notEmpty().withMessage('El nombre es obligatorio'),
-    body('surname').isString().trim().notEmpty().withMessage('El apellido es obligatorio'),
-    body('email').isEmail().normalizeEmail().withMessage('Se requiere un correo electrónico válido'),
-    body('phone').optional().isString().trim(),
-    body('nif').optional().isString().trim()
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const { name, surname, email, phone, nif } = req.body;
+// -------------------------
+// AGREGAR PRODUCTOS AL CARRITO
+// -------------------------
+app.post('/cart/add', isAuthenticated, async (req, res) => {
+  try {
+    // Se asume que el carrito se guarda en una tabla "carts" en MySQL
+    const cartItems = Array.isArray(req.body) ? req.body : [req.body];
+    for (const item of cartItems) {
+      const { productId, quantity } = item;
+      // Consulta parametrizada para insertar en carrito
       await poolPromise.query(
-        'UPDATE users SET name = ?, surname = ?, email = ?, phone = ?, nif = ? WHERE id = ?',
-        [name, surname, email, phone, nif, req.session.user.id]
+        'INSERT INTO carts (user_id, item_id, quantity) VALUES (?, ?, ?)',
+        [req.session.user.id, productId, quantity]
       );
-      res.json({ message: 'Perfil actualizado con éxito' });
-    } catch (err) {
-      console.error('Error en PUT /profile:', err);
-      res.status(500).json({ error: 'Ocurrió un error al actualizar el perfil' });
     }
+    res.json({ ok: "Products added to cart successfully" });
+  } catch (error) {
+    console.error("Error en /cart/add:", error);
+    res.status(500).json({ error: "Error al agregar productos al carrito." });
   }
-);
+});
 
 // -------------------------
-// GESTIÓN DEL CARRITO
+// ELIMINAR PRODUCTO DEL CARRITO
 // -------------------------
-app.post('/cart/add',
-  isAuthenticated,
-  [
-    body('itemId').notEmpty().withMessage('Se requiere el ID del artículo'),
-    body('quantity').isInt({ gt: 0 }).withMessage('La cantidad debe ser un número entero positivo')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const { itemId, quantity } = req.body;
-      await poolPromise.query('INSERT INTO carts (user_id, item_id, quantity) VALUES (?, ?, ?)', [req.session.user.id, itemId, quantity]);
-      res.json({ message: 'Artículo agregado al carrito' });
-    } catch (err) {
-      console.error('Error en POST /cart/add:', err);
-      res.status(500).json({ error: 'Ocurrió un error al agregar el artículo al carrito' });
-    }
+app.post('/cart/remove', isAuthenticated, async (req, res) => {
+  try {
+    const { productId } = req.body;
+    await poolPromise.query(
+      'DELETE FROM carts WHERE user_id = ? AND item_id = ?',
+      [req.session.user.id, productId]
+    );
+    res.json({ ok: "Product removed from cart" });
+  } catch (error) {
+    console.error("Error en /cart/remove:", error);
+    res.status(500).json({ error: "Error al eliminar producto del carrito." });
   }
-);
-
-app.post('/cart/delete',
-  isAuthenticated,
-  [
-    body('itemId').notEmpty().withMessage('Se requiere el ID del artículo')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const { itemId } = req.body;
-      await poolPromise.query('DELETE FROM carts WHERE user_id = ? AND item_id = ?', [req.session.user.id, itemId]);
-      res.json({ message: 'Artículo eliminado del carrito' });
-    } catch (err) {
-      console.error('Error en POST /cart/delete:', err);
-      res.status(500).json({ error: 'Ocurrió un error al eliminar el artículo del carrito' });
-    }
-  }
-);
+});
 
 // -------------------------
-// GESTIÓN DE PEDIDOS
+// OBTENER PEDIDOS DEL USUARIO
 // -------------------------
 app.get('/orders', isAuthenticated, async (req, res) => {
   try {
     const [rows] = await poolPromise.query('SELECT * FROM orders WHERE user_id = ?', [req.session.user.id]);
-    res.json(rows);
-  } catch (err) {
-    console.error('Error en GET /orders:', err);
-    res.status(500).json({ error: 'Ocurrió un error al obtener los pedidos' });
+    res.json({ ok: true, orders: rows });
+  } catch (error) {
+    console.error("Error en /orders:", error);
+    res.status(500).json({ error: "Error al obtener los pedidos." });
   }
 });
 
-// -------------------------
-// INICIAR SERVIDOR
-// -------------------------
+// Iniciar el servidor en el puerto configurado
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);

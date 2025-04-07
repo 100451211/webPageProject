@@ -12,9 +12,9 @@ let transitioning = false;
 
 // Array of background-specific color schemes (one per image)
 const colorSchemes = [
-    { headerColor: 'black', textColor: 'black', dropdownBgColor: '#333' },   // For the first image
+    { headerColor: 'black', textColor: 'black', dropdownBgColor: 'white' },   // For the first image
     { headerColor: 'white', textColor: 'white', dropdownBgColor: '#333' },   // For the second image
-    { headerColor: 'black', textColor: 'black', dropdownBgColor: '#333' },   // For the third image
+    { headerColor: 'black', textColor: 'black', dropdownBgColor: 'white' },   // For the third image
 ];
 
 // Function to change hero background and colors

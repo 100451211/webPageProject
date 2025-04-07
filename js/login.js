@@ -11,7 +11,9 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     body: JSON.stringify({ username, password })
   })
   .then(response => {
-    if (!response.ok) {
+    console.log('Login attempt::', username, password)
+    console.log('response ::', response);
+    if (!response.contains('ok')) {
       throw new Error('Usuario o contraseña inválida');
     }
     return response.json();
