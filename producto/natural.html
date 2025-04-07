@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natural - AURIDAL S.L.</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.webp">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="top-menu">
+            <div class="menu-icon" id="menuIcon">
+                <!-- SVG for the Menu Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="menuSvg">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
+            <a href="../index.html">
+                <div class="logo">AURIDAL S.L.</div> 
+            </a>
+            <div class="menu-container">
+                <ul class="menu">
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                            Nuestra empresa
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="black" d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="../nuestraEmpresa/queOfrecemos.html">¿Qué ofrecemos?</a>
+                            <a href="../nuestraEmpresa/quienesSomos.html">¿Quiénes somos?</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                            Producto
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="black" d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="../producto/colores.html">Colores</a>
+                            <a href="../producto/clasico.html">Clásico</a>
+                            <a href="../producto/natural.html">Natural</a>
+                            <a href="../producto/moderno.html">Moderno</a>
+                        </div>
+                    </li>
+                    <li><a href="../pie/contacto.html">Contacto</a></li>
+                    <li id="userIcon" class="dropdown">
+                        <a href="#" id="profileButton">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                                <path d="M12 14c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/>
+                            </svg>
+                        </a>
+                        <div  id="userDropdown" class="dropdown-content">
+                            <a href="../login.html">Inicia sesión</a>
+                        </div>
+                    </li>
+                </ul>
+                <div class="search-container">
+                    <input type="text" placeholder="Search..." id="searchInput" class="hidden">
+                    <button id="searchButton">
+                        <!-- Inline SVG for the search icon -->
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+            </div>
+        </nav>
+    </header>
+
+    <!-- Side Navigation Menu for Mobile (hidden by default) -->
+    <div id="sideMenu" class="side-menu">
+        <div class="side-menu-header">
+            <a href="../index.html">
+                <div class="logo">AURIDAL S.L.</div> 
+            </a>
+            <a href="#" class="closebtn" id="closeBtn">&times;</a>
+        </div>
+        <ul class="dropdown">
+            <a href="../login.html" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
+                    <path d="M12 14c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/>
+                </svg>
+                Inicia sesión
+            </a>
+        </ul>
+        <ul class="dropdown">
+            <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+              Nuestra empresa
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="white" d="M7 10l5 5 5-5z"/>
+                </svg>
+            </a>
+            <div class="dropdown-content">
+                <a href="../nuestraEmpresa/queOfrecemos.html">¿Qué ofrecemos?</a>
+                <a href="../nuestraEmpresa/quienesSomos.html">¿Quiénes somos?</a>
+            </div>
+        </ul>
+        <ul class="dropdown">
+            <a href="#" class="dropbtn" role="link" tabindex="0" aria-expanded="false" aria-haspopup="true">
+              Producto
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="white" d="M7 10l5 5 5-5z"/>
+                </svg>
+            </a>
+            <div class="dropdown-content">
+                <a href="../producto/colores.html">Colores</a>
+                <a href="../producto/clasico.html">Clásico</a>
+                <a href="../producto/natural.html">Natural</a>
+                <a href="../producto/moderno.html">Moderno</a>
+            </div>
+        </ul>
+        <ul>
+            <a href="../pie/contacto.html">Contacto</a>
+        </ul>
+    </div>
+        
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-sidebar-header">
+            <h2>Tu Carrito</h2>
+            <button class="close-cart" onclick="toggleCartSidebar()">✖</button>
+        </div>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically loaded here -->
+        </div>
+        <div class="cart-sidebar-footer">
+            <button class="checkout-button">
+                <strong style="font-size: 18px;">Generar factura</strong>
+                <p><span id="total-amount">0.00€</span></p>
+            </button>
+        </div>
+    </div> 
+    
+    <!-- Main content -->
+    <main>
+        <!-- Title -->
+        <div>
+            <section class="product-title">
+                <h1>Natural</h1>
+                <!-- Breadcrumb with Home Icon -->
+            <p></p>
+            </section>
+        </div>
+
+        <!-- Mosaic of Products with Arrow Navigation -->
+        <section class="product-mosaic">
+            <div class="product-grid">
+
+            </div>
+        </section>
+        
+        <!-- Pop-Up Notification -->
+        <div id="popup" class="popup">
+            <span id="popup-close" class="popup-close">&times;</span>
+            <div id="popup-emoji" class="popup-emoji"></div>
+            <span id="popup-message"></span>
+        </div>
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/category.js"></script>
+    <script>
+        // Set the category name
+        const category = 'natural';
+
+        // Update the page title and breadcrumb
+        document.title = `${capitalizeFirstLetter(category)} - AURIDAL S.L.`;
+        document.querySelector('.product-title h1').textContent = capitalizeFirstLetter(category);
+        const breadcrumb = document.querySelector('.product-title p');
+        console.log("Breadcrumb:", breadcrumb);
+        breadcrumb.innerHTML = 
+        `<!-- Home SVG icon -->
+                <a href="../index.html" style="text-decoration: none; color: inherit;">
+                    <svg href="../index.html" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 .134l6.571 5.428c.326.27.429.745.245 1.12a.857.857 0 0 1-.794.48H12.86v5.527a.857.857 0 0 1-.857.857h-1.715a.857.857 0 0 1-.857-.857V9.429H6.571v3.857a.857.857 0 0 1-.857.857H4a.857.857 0 0 1-.857-.857V7.163H2.128a.857.857 0 0 1-.794-.48.857.857 0 0 1 .245-1.12L8 .134z"/>
+                    </svg>
+                </a>
+                    &gt Producto &gt
+                <a href="${category}.html" style="text-decoration: none; color: inherit;"> ${capitalizeFirstLetter(category)}</a>
+        `;
+        
+        breadcrumb.href = `${category}.html`;
+
+        // Load the products for this category
+        loadCategory(category);
+    </script>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>© 2024 AURIDAL S.L. | Todos los derechos reservados</p>
+            <ul class="footer-menu">
+                <li><a href="../pie/privacidad.html">Política de privacidad</a></li>
+                <li><a href="../pie/servicio.html">Términos de servicio</a></li>
+                <li><a href="../pie/contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>
