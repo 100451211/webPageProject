@@ -1,5 +1,7 @@
 function loadCategory(category) {
+    const url_one = `.`
     url= `../data/products/${category}.json`
+    console.log(url);
     fetch(url)
         .then(response => response.json())
         .then(products => {

@@ -11,15 +11,13 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     body: JSON.stringify({ username, password })
   })
   .then(response => {
-    console.log('Login attempt::', username, password)
-    console.log('response ::', response);
-    if (!response.contains('ok')) {
+    if (!response.ok) {
       throw new Error('Usuario o contraseña inválida');
     }
     return response.json();
   })
   .then(data => {
-    if (data.message === 'Login successful') {
+    if (data.message === 'Inicio de sesión exitoso') {
       // Revisa si hay parámetro redirectUrl para redirigir
       const urlParams = new URLSearchParams(window.location.search);
       const redirectUrl = urlParams.get('redirectUrl');
@@ -29,6 +27,11 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
       } else {
         window.location.href = '../index.html';
       }
+    } else if (data.message === 'Se requiere cambio de contraseña') {
+        // Implementar cambio de contraseña y almacenamiento, redirigir a página anterior.
+        console.log('Se requiere cambio de contraseña');
+
+
     } else {
       document.getElementById('loginError').textContent = 'Usuario o contraseña inválida. Por favor, inténtelo de nuevo.';
       document.getElementById('loginError').style.display = 'block';

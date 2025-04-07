@@ -95,28 +95,27 @@ app.post('/login',
     }
     try {
       const { username, password } = req.body;
+      console.log('POST login ::',username, password);
       
       // Consulta parametrizada para evitar inyección SQL
-      const [rows] = await poolPromise.query('SELECT * FROM users WHERE username = ?', [username]);
+      const [rows] = await poolPromise.query('SELECT username, password FROM users WHERE username = ?', [username]);
+      console.log(rows);
       if (rows.length === 0) {
         return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos.' });
       }
       const user = rows[0];
-      const valid = await bcrypt.compare(password, user.password);
-      if (!valid) {
+      const valid_pass = await bcrypt.compare(password, user.password);
+      const valid_user = (username === user.username);
+      console.log('validation:', valid_user, valid_pass);
+      if (!valid_pass || !valid_user) {
         return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos.' });
       }
       
-      // Guardar datos relevantes del usuario en la sesión
-      req.session.user = {
-        id: user.id,
-        username: user.username,
-        isAdmin: user.isAdmin,
-        forcePasswordChange: user.forcePasswordChange
-      };
-      
       // Solo se retorna el mensaje de éxito sin exponer detalles internos
-      return res.json({ ok: "Login successful" });
+      if (user.forcePasswordChange) {
+        return res.json({ message: 'Se requiere cambio de contraseña', forcePasswordChange: true });
+      }
+      res.json({ message: 'Inicio de sesión exitoso' });
     } catch (error) {
       console.error("Error durante login:", error);
       return res.status(500).json({ error: "Error interno del servidor." });
