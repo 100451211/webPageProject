@@ -315,7 +315,7 @@ async function updateUserDropdown() {
         profileLink.textContent = 'Perfil';
         profileLink.addEventListener('click', (event) => {
             event.preventDefault();
-            window.location.href = 'profile.html';
+            window.location.href = '../profile.html';
         });
 
         const logoutLink = document.createElement('a');
