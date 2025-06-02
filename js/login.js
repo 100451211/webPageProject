@@ -31,7 +31,6 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         // Implementar cambio de contraseña y almacenamiento, redirigir a página anterior.
         console.log('Se requiere cambio de contraseña');
 
-
     } else {
       document.getElementById('loginError').textContent = 'Usuario o contraseña inválida. Por favor, inténtelo de nuevo.';
       document.getElementById('loginError').style.display = 'block';

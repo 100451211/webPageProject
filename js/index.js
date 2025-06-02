@@ -65,15 +65,15 @@ async function sendEmail(to, subject, text) {
 
 // Middleware para verificar que el usuario esté autenticado
 function isAuthenticated(req, res, next) {
-  if (req.session && req.session.user) {
-    return next();
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'No autenticado' });
   }
-  return res.status(401).json({ error: 'No autorizado' });
+  return res.next();
 }
 
 // Middleware para verificar que el usuario sea administrador
 function isAdmin(req, res, next) {
-  if (req.session && req.session.user && req.session.user.isAdmin) {
+  if (req.session && req.session.userId && req.session.user.isAdmin) {
     return next();
   }
   return res.status(401).json({ error: 'Acceso restringido: se requiere permisos de administrador' });
@@ -95,33 +95,53 @@ app.post('/login',
     }
     try {
       const { username, password } = req.body;
-      console.log('POST login ::',username, password);
       
       // Consulta parametrizada para evitar inyección SQL
-      const [rows] = await poolPromise.query('SELECT username, password FROM users WHERE username = ?', [username]);
-      console.log(rows);
-      if (rows.length === 0) {
+      const [rows] = await poolPromise.query('SELECT id, username, password, isAdmin, forcePasswordChange FROM users WHERE username = ?', [username]);      if (rows.length === 0) {
         return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos.' });
       }
       const user = rows[0];
       const valid_pass = await bcrypt.compare(password, user.password);
       const valid_user = (username === user.username);
       console.log('validation:', valid_user, valid_pass);
+
+      if (valid_pass && valid_user){
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        if (user.isAdmin == 1){
+          req.session.isAdmin = true;
+        }
+      }
+
       if (!valid_pass || !valid_user) {
         return res.status(401).json({ error: 'Nombre de usuario o contraseña inválidos.' });
       }
-      
       // Solo se retorna el mensaje de éxito sin exponer detalles internos
       if (user.forcePasswordChange) {
         return res.json({ message: 'Se requiere cambio de contraseña', forcePasswordChange: true });
       }
-      res.json({ message: 'Inicio de sesión exitoso' });
+      res.status(200).json({ message: 'Inicio de sesión exitoso' });
     } catch (error) {
       console.error("Error durante login:", error);
       return res.status(500).json({ error: "Error interno del servidor." });
     }
   }
 );
+
+app.get('/api/session/status', (req, res) => {
+  if (req.session.userId) {
+    res.status(200).json({
+      loggedIn: true,
+      userId: req.session.userId,
+      username: req.session.username,
+      isAdmin: req.session.isAdmin || false 
+    });
+  } else {
+    res.status(200).json({
+      loggedIn: false
+    });
+  }
+});
 
 // -------------------------
 // ADMIN: Crear usuario (con validación de entrada)
@@ -206,18 +226,142 @@ app.get('/logout', isAuthenticated, (req, res) => {
 // OBTENER PERFIL DE USUARIO
 // -------------------------
 app.get('/profile', isAuthenticated, async (req, res) => {
+
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'No autenticado' });
+  }
+
   try {
+    console.log(req);
     const [rows] = await poolPromise.query(
-      'SELECT id, name, surname, email, phone, nif, username, profilePicture, street, street_num, postal_code, city, country, cif FROM users WHERE id = ?',
+      'SELECT id, name, surname, email, phone, nif, username FROM users WHERE id = ?',
       [req.session.user.id]
     );
     if (rows.length === 0) {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
+    
+    res.status(200)
     res.json(rows[0]);
   } catch (error) {
     console.error("Error en /profile:", error);
     res.status(500).json({ error: "Error al obtener los datos del usuario." });
+  }
+
+});
+
+// -------------------------
+// RECOGER INFO DE CATEGORIA PRODUCTOS
+//    (condiciona ver el precio) 
+// -------------------------
+
+app.get('/api/products/:category', async (req, res) => {
+  const { category } = req.params;
+  try {
+    // Usamos los nombres de columna de tu tabla AURIDAL_SL.products
+    // Seleccionamos las columnas que necesitas para la vista de lista de productos
+    const query = `
+      SELECT id, proveedor, referencia, nombre, categoria, alto, ancho, largo, salto, precio, stock, descripcion, cuidado 
+      FROM products 
+      WHERE categoria = ?
+    `;
+    const [rows] = await poolPromise.query(query, [category]);
+
+    if (rows.length === 0) {
+      return res.status(200).json([]); // Devolvemos array vacío si no hay productos en la categoría
+    }
+
+    let productsToSend;
+    if (!req.session.userId) {
+      // Si el usuario NO está logueado, mapeamos los productos para quitarles el 'precio'.
+      productsToSend = rows.map(product => {
+        const { precio, ...productWithoutPrice } = product;
+        // Alternativa: return { ...product, priceInfo: 'Inicia sesión para ver el precio' };
+        return productWithoutPrice;
+      });
+    } else {
+      // Si el usuario SÍ está logueado, enviamos los productos tal cual.
+      productsToSend = rows;
+    }
+
+    res.status(200).json(productsToSend);
+  } catch (error) {
+    console.error(`Error al obtener productos para la categoría ${category}:`, error);
+    res.status(500).json({ error: 'Error interno del servidor al obtener productos por categoría.' });
+  }
+});
+
+// -------------------------
+// RECOGER INFORMACION DE PRODUCTOS INDIVIDUALES
+//    (condiciona ver el precio) 
+// -------------------------
+
+app.get('/api/product-details/:productId', async (req, res) => {
+  const { productId } = req.params;
+  try {
+    // Usamos los nombres de columna de tu tabla AURIDAL_SL.products
+    const [rows] = await poolPromise.query('SELECT id, proveedor, referencia, nombre, categoria, alto, ancho, largo, salto, precio, stock, descripcion, cuidado FROM products WHERE id = ?', [productId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
+    let product = rows[0];
+    let productToSend = { ...product }; // Clonamos para modificar solo la copia que se envía
+
+    if (!req.session.userId) {
+      // Si el usuario NO está logueado, eliminamos el campo 'precio'.
+      delete productToSend.precio;
+      // Alternativa: añadir un mensaje en lugar de eliminar (si lo prefieres)
+      // productToSend.priceInfo = 'Inicia sesión para ver el precio'; 
+    }
+
+    res.status(200).json(productToSend);
+  } catch (error) {
+    console.error(`Error al obtener detalles del producto ${productId}:`, error);
+    res.status(500).json({ error: 'Error interno del servidor al obtener detalles del producto.' });
+  }
+});
+
+// -------------------------
+// BUSQUEDA DE PRODUCTOS 
+// (condiciona ver el precio) 
+// -------------------------
+
+app.get('/api/products', async (req, res) => {
+  const searchTerm = req.query.q ? String(req.query.q).toLowerCase() : '';
+  // Seleccionamos todas las columnas necesarias de la tabla products
+  let query = 'SELECT id, proveedor, referencia, nombre, categoria, alto, ancho, largo, salto, precio, stock, descripcion, cuidado FROM products';
+  const queryParams = [];
+
+  if (searchTerm) {
+    // Buscamos en 'nombre', 'descripcion', 'categoria', 'referencia' y 'proveedor'.
+    // Ajusta los campos de búsqueda según tus necesidades.
+    query += ' WHERE LOWER(nombre) LIKE ? OR LOWER(descripcion) LIKE ? OR LOWER(categoria) LIKE ? OR LOWER(referencia) LIKE ? OR LOWER(proveedor) LIKE ?';
+    const likeSearchTerm = `%${searchTerm}%`;
+    queryParams.push(likeSearchTerm, likeSearchTerm, likeSearchTerm, likeSearchTerm, likeSearchTerm);
+  }
+
+  try {
+    const [rows] = await poolPromise.query(query, queryParams);
+
+    let productsToSend;
+    if (!req.session.userId) {
+      // Si el usuario NO está logueado, mapeamos los productos para quitarles el 'precio'.
+      productsToSend = rows.map(product => {
+        const { precio, ...productWithoutPrice } = product;
+        // Alternativa: return { ...product, priceInfo: 'Inicia sesión para ver el precio' };
+        return productWithoutPrice;
+      });
+    } else {
+      // Si el usuario SÍ está logueado, enviamos los productos tal cual.
+      productsToSend = rows;
+    }
+
+    res.status(200).json(productsToSend);
+  } catch (error) {
+    console.error(`Error al buscar productos con término "${searchTerm}":`, error);
+    res.status(500).json({ error: 'Error interno del servidor al buscar productos.' });
   }
 });
 

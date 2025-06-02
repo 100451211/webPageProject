@@ -27,9 +27,7 @@ async function loadUserData() {
   try {
     const response = await fetch('/api/get-user', {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       credentials: 'include', // Include cookies for authentication
     });
 

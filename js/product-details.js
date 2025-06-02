@@ -483,7 +483,7 @@ function redirectToProductPage(productId, category) {
 // Function to check if the user is authenticated
 async function checkAuthStatus() {
     try {
-        const response = await fetch('/auth/check-auth', {
+        const response = await fetch('/profile', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'  // Include cookies in the request
@@ -505,31 +505,42 @@ function getQueryParam(param) {
 
 // Update the price based on user login status
 async function updatePrice() {
-    const category = getQueryParam('category');
-    const productId = getQueryParam('id');
+    // Obtener parámetros de la URL para saber la categoría y el ID del producto
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    const productId = urlParams.get('id');
     const currentPageUrl = window.location.pathname + window.location.search;
-
+  
     try {
-        // Fetch product data
-        const response = await fetch(`../data/products/${category}.json`);
-        const products = await response.json();
-        const product = products.find(p => p.id === productId);
-        
-
-        if (product) {
-            const isLoggedIn = await checkAuthStatus();
-            const priceMessage = document.getElementById('priceMessage');
-
-            if (isLoggedIn) {
-                priceMessage.innerHTML = `<strong>Precio:</strong> ${product.supplier_prices.madrid}€`;
-            } else {
-                priceMessage.innerHTML = `<strong>Precio:</strong> <a href="../login.html?redirectUrl=${encodeURIComponent(currentPageUrl)}" style="color:blue;">Inicia sesión</a> para visualizar precios.`;
-            }
-        }
+      // Consultar datos del producto. Aquí se asume que este JSON sigue siendo la fuente de datos del producto.
+      const response = await fetch(`../data/products/${category}.json`);
+      const products = await response.json();
+      const product = products.find(p => p.id === productId);
+      
+      const priceMessage = document.getElementById('priceMessage');
+      if (!product) {
+        priceMessage.innerHTML = 'Producto no encontrado.';
+        return;
+      }
+  
+      // Verificar si el usuario está autenticado llamando a GET /profile
+      const authResponse = await fetch('/profile', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+  
+      if (authResponse.ok) {
+        // Usuario autenticado: mostrar precio
+        priceMessage.innerHTML = `<strong>Precio:</strong> ${product.supplier_prices.madrid}€`;
+      } else {
+        // Usuario no autenticado: mostrar enlace para iniciar sesión
+        priceMessage.innerHTML = `<strong>Precio:</strong> <a href="../login.html?redirectUrl=${encodeURIComponent(currentPageUrl)}" style="color:blue;">Inicia sesión</a> para visualizar precios.`;
+      }
     } catch (error) {
-        console.error('Error fetching product data:', error);
+      console.error('Error al actualizar el precio:', error);
     }
-}
+  }
 
 document.addEventListener('DOMContentLoaded', () => {
     updatePrice();

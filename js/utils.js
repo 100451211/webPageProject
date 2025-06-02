@@ -1,5 +1,8 @@
 /* ======================================== */
 /* ========= FONDO CAMBIANTE ============== */
+
+// const { response } = require("express");
+
 /* ======================================== */
 const heroImages = document.querySelectorAll('.hero-image');
 const logo = document.querySelector('.logo');
@@ -285,67 +288,79 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Función para verificar el estado de autenticación
 async function checkAuthStatus() {
+    console.log("Llamando checkAuthStatus... ");
     try {
-        const response = await fetch('/profile', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
-        // Si la respuesta es 200 se considera autenticado
-        return response.ok;
-    } catch (error) {
-        console.error('Error al verificar la autenticación:', error);
+      const response = await fetch('/profile', {
+        method: 'GET',
+        credentials: 'include'  // para enviar la cookie de sesión
+      });
+      console.log(response.status);
+      if (response.status != 200) {
+        console.log("Returning false");
+        // Si status != 200, asume que no está autenticado
         return false;
+      }
+      // Si es 200, parseamos la respuesta
+      // const data = await response.json();
+      console.log("Returning true");
+      // Por ejemplo, data.userId
+      return true;
+    } catch (error) {
+      console.error('Error al verificar autenticación:', error);
+      return false;
     }
-}
+  };
 
-
-// Función para actualizar el menú desplegable según el estado de autenticación
+// Función para actualizar el menú desplegable según el estado de la sesión
 async function updateUserDropdown() {
     const isAuthenticated = await checkAuthStatus();
     console.log("isAuthenticated:", isAuthenticated);
     const userDropdown = document.getElementById('userDropdown');
     userDropdown.innerHTML = ''; // Limpiar contenido previo
-
+  
     if (isAuthenticated) {
-        const profileLink = document.createElement('a');
-        profileLink.href = '#';
-        profileLink.textContent = 'Perfil';
-        profileLink.addEventListener('click', (event) => {
-            event.preventDefault();
-            window.location.href = 'profile.html';
-        });
-
-        const logoutLink = document.createElement('a');
-        logoutLink.href = '#';
-        logoutLink.textContent = 'Cerrar sesión';
-        logoutLink.addEventListener('click', async (event) => {
-            event.preventDefault();
-            await fetch('/logout', { method: 'GET', credentials: 'include' });
-            window.location.href = '../index.html';
-        });
-
-        userDropdown.appendChild(profileLink);
-        userDropdown.appendChild(logoutLink);
+      // Mostrar opciones para usuario autenticado
+      const profileLink = document.createElement('a');
+      profileLink.href = '#';
+      profileLink.textContent = 'Perfil';
+      profileLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.location.href = '../profile.html';
+      });
+  
+      const logoutLink = document.createElement('a');
+      logoutLink.href = '#';
+      logoutLink.textContent = 'Cerrar sesión';
+      logoutLink.addEventListener('click', async (event) => {
+        event.preventDefault();
+        // Usamos el endpoint /logout (anteriormente /auth/sign-out) y enviamos cookies
+        await fetch('/logout', { method: 'GET', credentials: 'include' });
+        window.location.href = '../index.html';
+      });
+  
+      userDropdown.appendChild(profileLink);
+      userDropdown.appendChild(logoutLink);
     } else {
-        const loginLink = document.createElement('a');
-        loginLink.href = '../login.html';
-        loginLink.textContent = 'Inicia sesión';
-        userDropdown.appendChild(loginLink);
+      // Si no está autenticado, muestra la opción de iniciar sesión
+      const loginLink = document.createElement('a');
+      loginLink.href = '../login.html';
+      loginLink.textContent = 'Inicia sesión';
+      userDropdown.appendChild(loginLink);
     }
-
-    // Actualizar enlace en el menú lateral
+  
+    // Actualizar el enlace en el menú lateral, si existe
     const sideMenuAuthLink = document.getElementById('sideMenuAuthLink');
-    if (isAuthenticated) {
+    if (sideMenuAuthLink) {
+      if (isAuthenticated) {
         sideMenuAuthLink.textContent = 'Perfil';
         sideMenuAuthLink.href = '../profile.html';
-    } else {
+      } else {
         sideMenuAuthLink.textContent = 'Inicia sesión';
         sideMenuAuthLink.href = '../login.html';
+      }
     }
-}
+  }
 
 // Initialize the dropdown when the page loads
 document.addEventListener('DOMContentLoaded', async() => {
@@ -577,7 +592,7 @@ document.getElementsByClassName('checkout-button')[0].addEventListener('click', 
             return;
         }
 
-        // Send cart data to the server for processing
+        // Send cart data to the erver for processing
         const paymentResponse = await fetch('/api/proceed-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
